@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiddleEgyptianDictionary", "MiddleEgyptianDictionary\MiddleEgyptianDictionary.csproj", "{C7D64907-59EF-47A7-BC51-4EA566DE5F19}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C7D64907-59EF-47A7-BC51-4EA566DE5F19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7D64907-59EF-47A7-BC51-4EA566DE5F19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7D64907-59EF-47A7-BC51-4EA566DE5F19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7D64907-59EF-47A7-BC51-4EA566DE5F19}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59B004E0-9F52-4D92-B54D-5C6A2B197E83}
+	EndGlobalSection
+EndGlobal
