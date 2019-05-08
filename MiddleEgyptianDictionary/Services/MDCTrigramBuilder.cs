@@ -155,12 +155,12 @@ namespace MiddleEgyptianDictionary.Services
             }
         }
 
-        public Dictionary<string, string> GetFormattedDictionary(List<string> list)
+        public Dictionary<string, string> GetFormattedDictionary(IEnumerable<string> list)
         {
             Dictionary<string, string> formattedDict = new Dictionary<string, string>();
             foreach (string item in list)
             {
-                Debug.WriteLine("Formatting " + (formattedDict.Count + 1).ToString() + " of " + list.Count.ToString());
+                Debug.WriteLine("Formatting " + (formattedDict.Count + 1).ToString() + " of " + list.Count().ToString());
                 string current = item.Replace("  ", " ");
                 if (String.IsNullOrWhiteSpace(current) || !Regex.IsMatch(current, @"^(([A-Z]|AA)([0-9])+[A-Z]*\s?)+$"))
                 {
