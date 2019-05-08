@@ -4,8 +4,6 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using MiddleEgyptianDictionary;
 using System.Diagnostics;
 
 namespace MiddleEgyptianDictionary.DictionaryParser

@@ -3,12 +3,7 @@ using System.IO;
 using MiddleEgyptianDictionary.Interfaces;
 using MiddleEgyptianDictionary.Parsing;
 using MiddleEgyptianDictionary.Services;
-using MongoDB.Driver;
-using System.Security.Authentication;
 using MongoDB.Bson;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
 
 namespace MiddleEgyptianDictionary
 {
@@ -51,12 +46,6 @@ namespace MiddleEgyptianDictionary
 
         public static void Main(string[] args)
         {
-            Serializer serializer = new Serializer();
-            IEnumerable<string> gardinerValues = (IEnumerable<string>)serializer.LoadData("C:\\Users\\lfr2l\\U of T\\NML340\\gardinerSignData.txt");
-            MDCTrigramBuilder trigramBuilder = new MDCTrigramBuilder("C:\\Users\\lfr2l\\U of T\\NML340\\Trigrams.txt", true);
-            var gardinerToMDC = trigramBuilder.GetFormattedDictionary(gardinerValues.ToList());
-            serializer.SaveData("C:\\Users\\lfr2l\\U of T\\NML340\\gardinerToMDC.txt", gardinerToMDC);
-
         }
     }
 }
