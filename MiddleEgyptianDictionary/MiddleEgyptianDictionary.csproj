@@ -210,6 +210,7 @@
     </Compile>
     <Compile Include="Services\DbWriter.cs" />
     <Compile Include="Services\GardinerConverter.cs" />
+    <Compile Include="Services\GardinerFormatter.cs" />
     <Compile Include="Services\MDCToGardiner.cs" />
     <Compile Include="Services\MDCTrigramBuilder.cs" />
     <Compile Include="Services\Serializer.cs" />
