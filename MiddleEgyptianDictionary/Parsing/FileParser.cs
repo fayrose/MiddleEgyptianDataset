@@ -26,15 +26,15 @@ public abstract class FileParser
         
         DictionaryEntry entry;
         // Generate hash string
-        string hashString = transliterationChunk.Trim() + "/" + signList.Trim().ToUpper();
+        string hashString = transliterationChunk + "/" + signList.ToUpper();
         posChunk = FixPartOfSpeech(posChunk);
         // Check if the HashTracker contains the hashstring
         if (!HashTracker.TryGetValue(hashString, out entry))
         {
             entry = new DictionaryEntry()
             {
-                transliteration = transliterationChunk.Trim(),
-                gardinerSigns = signList.Trim().ToUpper()
+                transliteration = transliterationChunk,
+                gardinerSigns = signList.Replace("  ", " ").ToUpper()
             };
             HashTracker.Add(hashString, entry);
         }

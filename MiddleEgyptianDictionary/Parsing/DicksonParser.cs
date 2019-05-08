@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MiddleEgyptianDictionary;
+using System.Diagnostics;
 
 namespace MiddleEgyptianDictionary.DictionaryParser
 {
@@ -24,6 +25,7 @@ namespace MiddleEgyptianDictionary.DictionaryParser
             {
                 for (int i = 1; i <= 617; i++)
                 {
+                    Debug.WriteLine("Page " + i.ToString());
                     ParsePageHelper(i, reader, pdf);
                 }
             }

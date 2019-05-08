@@ -130,7 +130,7 @@ namespace MiddleEgyptianDictionary.Services
         private void ParseLine(string line)
         {
             int idx = 0;
-            String[] splitLine = Regex.Split(line, @"\*|-|:");
+            String[] splitLine = Regex.Split(line, @"\*|-|:|&");
             for (int i = 0; i < splitLine.Length - 2; i++)
             {
                 // Add trigram to dictionary if doesn't presently exist
@@ -227,11 +227,8 @@ namespace MiddleEgyptianDictionary.Services
 
         private string CombineTrigrams(List<string> trigramPossibilities, string toMake)
         {
-            if (trigramPossibilities.Count == 0)
-            {
-                Console.WriteLine("Well, fuck");
-            }
-            else if (trigramPossibilities.Count == 1)
+            Debug.Assert(trigramPossibilities.Count != 0);
+            if (trigramPossibilities.Count == 1)
             {
                 return trigramPossibilities.First();
             }
