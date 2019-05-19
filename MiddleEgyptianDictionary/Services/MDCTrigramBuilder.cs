@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MiddleEgyptianDictionary.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,43 +8,53 @@ using System.Text.RegularExpressions;
 
 namespace MiddleEgyptianDictionary.Services
 {
-    class MDCTrigramBuilder
+    static class MDCTrigramBuilder
     {
-        readonly string FilePath;
-        Dictionary<string, Dictionary<string, int>> Trigrams = new Dictionary<string, Dictionary<string, int>>();
+        static Dictionary<string, Dictionary<string, int>> Trigrams = new Dictionary<string, Dictionary<string, int>>();
 
-        public MDCTrigramBuilder(string path)
+        public static Dictionary<string, Dictionary<string, int>> GenerateTrigrams()
         {
-            FilePath = path;            
-        }
-
-        public Dictionary<String, Dictionary<String, int>> GenerateTrigrams(bool getCached = false, string saveTo = null)
-        {
-            Serializer serializer = new Serializer();
-            if (getCached)
+            if (Trigrams.Count == 0)
             {
-                Trigrams = (Dictionary<string, Dictionary<string, int>>)serializer.LoadData(FilePath);
+                if (File.Exists(Constants.MDCTrigramsLocation))
+                    return GenerateTrigrams(Constants.MDCTrigramsLocation, true);
+                else
+                    return GenerateTrigrams(Constants.MDCTextsLocation, false, Constants.MDCTrigramsLocation);
             }
             else
             {
-                ParseMDCFiles();
-                if (!(saveTo is null))
-                {
-                    serializer.SaveData(saveTo, Trigrams);
-                }
+                return Trigrams;
+            }
+        }
+
+        public static Dictionary<String, Dictionary<String, int>> GenerateTrigrams(string path, bool getCached = false, string saveTo = null)
+        {
+            // If getCached is true, path is location to load from 
+            // If getCached is false, path is location to parse from 
+            if (getCached)
+            {
+                Trigrams = (Dictionary<string, Dictionary<string, int>>)Serializer.LoadData(path);
+            }
+            else
+            {
+                ParseMDCFiles(path);                
+            }
+            if (!(saveTo is null))
+            {
+                Serializer.SaveData(saveTo, Trigrams);
             }
             return Trigrams;
         }
 
-        private void ParseMDCFiles()
+        private static void ParseMDCFiles(string path)
         {
-            foreach (string file in Directory.GetFiles(FilePath))
+            foreach (string file in Directory.GetFiles(path))
             {
-                ParseData(File.ReadAllText(Path.Combine(FilePath, file)));
+                ParseData(File.ReadAllText(Path.Combine(path, file)));
             }
         }
 
-        private void ParseData(string fileData)
+        private static void ParseData(string fileData)
         {
             string[] pages = fileData.Split(new string[] { "!!" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string page in pages)
@@ -52,7 +63,7 @@ namespace MiddleEgyptianDictionary.Services
             }
         }
 
-        private void ParsePage(string page)
+        private static void ParsePage(string page)
         {
             string[] lines = page.Split(new string[] { "!\n", "-!\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
@@ -61,7 +72,7 @@ namespace MiddleEgyptianDictionary.Services
             }
         }
 
-        private void PreprocessLine(string line)
+        private static void PreprocessLine(string line)
         {
             String newLine = Regex.Replace(line, "{{([0-9]*,)*[0-9]*}}", "");
             newLine = Regex.Replace(newLine, @"\*\*", "-");
@@ -83,17 +94,17 @@ namespace MiddleEgyptianDictionary.Services
             newLine = Regex.Replace(newLine,
                 @"([a-zA-Z]+[0-9]+|\.\.?)(-|\*|:)(\([a-zA-Z]+[0-9]+)(\^\^\^)([a-zA-Z]+[0-9]+\))(-|\*|:)?",
                 "($1$2$3*$5)$6");
-            var matches = Regex.Matches(newLine, @"(-|\*|:|&)([a-zA-Z]*?)(-|\*|:)");
-            if (matches.Count > 0)
-            {
-                Console.WriteLine("hello world");
-            }
+            newLine = Regex.Replace(newLine, @"(-|\*|:|&){2,}", "-");
+            newLine = Regex.Replace(newLine, @"(-(v|h)\/)+", "");
+            newLine = Regex.Replace(newLine, @"((-|\*|:|&)(O|o))+(-|\*|:)", "-");
             newLine = ChangePhoneticToGardiner(newLine);
             newLine = FixNumbering(newLine);
+            var matches = Regex.Matches(newLine, @"(-|\*|:|&)([a-zA-Z]+?)(-|\*|:)");
+            Debug.Assert(matches.Count == 0);
             ParseLine(newLine);
         }
 
-        private string ChangePhoneticToGardiner(string line)
+        private static string ChangePhoneticToGardiner(string line)
         {
             line = Regex.Replace(line, "Y1(v|V)", "Y1A");
             foreach (Match match in Regex.Matches(line, @"(:|-|\*)[a-zA-z]+(:|-|\*)"))
@@ -110,7 +121,7 @@ namespace MiddleEgyptianDictionary.Services
             return line;
         }
 
-        private string FixNumbering(string line)
+        private static string FixNumbering(string line)
         {
             foreach (Match match in Regex.Matches(line, @"(-|\*|:)([1-5]0?0?|100)(-|\*|:)?"))
             {
@@ -124,7 +135,7 @@ namespace MiddleEgyptianDictionary.Services
             return line;
         }
 
-        private void ParseLine(string line)
+        private static void ParseLine(string line)
         {
             int idx = 0;
             String[] splitLine = Regex.Split(line, @"\*|-|:|&");
@@ -151,7 +162,5 @@ namespace MiddleEgyptianDictionary.Services
                 idx += splitLine[i].Length + 1;
             }
         }
-
-        
     }
 }
