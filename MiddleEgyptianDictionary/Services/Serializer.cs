@@ -8,15 +8,15 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MiddleEgyptianDictionary.Services
 {
-    class Serializer
+    static class Serializer
     {
-        public IEnumerable<BsonDocument> SerializeData(IEnumerable<DictionaryEntry> data)
+        public static IEnumerable<BsonDocument> DataToBSon(IEnumerable<DictionaryEntry> data)
         {
             return from item in data
                    select item.ToBsonDocument();
         }
 
-        public Boolean SaveData(string path, object data)
+        public static Boolean SaveData(string path, object data)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace MiddleEgyptianDictionary.Services
             }
         }
 
-        public object LoadData(string path)
+        public static object LoadData(string path)
         {
             try
             {
