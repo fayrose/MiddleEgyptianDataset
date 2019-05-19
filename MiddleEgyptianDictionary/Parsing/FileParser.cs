@@ -1,17 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MiddleEgyptianDictionary;
 using MiddleEgyptianDictionary.Models;
+using MiddleEgyptianDictionary.Services;
 
 public abstract class FileParser
 {
     internal string fileName;
     internal Dictionary<string, DictionaryEntry> HashTracker;
+    GardinerFormatter Formatter;
 
     public FileParser(string fileName, Dictionary<string, DictionaryEntry> hashTracker)
     {
         this.fileName = fileName;
         HashTracker = hashTracker;
+        Formatter = new GardinerFormatter();
+        Dictionary<string, string> converter = Formatter.GetConverter();
     }
 
     public abstract void ParseAll();
@@ -27,13 +32,17 @@ public abstract class FileParser
         // Generate hash string
         string hashString = transliterationChunk + "/" + signList.ToUpper();
         posChunk = FixPartOfSpeech(posChunk);
+        signList = signList.Replace("  ", " ").ToUpper();
         // Check if the HashTracker contains the hashstring
         if (!HashTracker.TryGetValue(hashString, out entry))
         {
+            string mdc = Formatter.GetFormattedWord(signList);
             entry = new DictionaryEntry()
             {
-                transliteration = transliterationChunk,
-                gardinerSigns = signList.Replace("  ", " ").ToUpper()
+                Transliteration = transliterationChunk,
+                GardinerSigns = signList,
+                ManuelDeCodage = mdc,
+                Res = ManuelDeCodageToRESConverter.ConvertString(mdc)
             };
             HashTracker.Add(hashString, entry);
         }
@@ -61,7 +70,7 @@ public abstract class FileParser
         return entry;
 
     }
-
+    
     private string FixPartOfSpeech(string posString)
     {
         if (posString == null)
