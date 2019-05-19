@@ -12,5 +12,9 @@ namespace MiddleEgyptianDictionary.Parsing
         public const int Vygus2018LastPage = 2568;
         public const int Vygus2012FirstPage = 24;
         public const int Vygus2012LastPage = 2267;
+        public static string MDCTextsLocation = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "mdc_texts");
+        public static string MDCTrigramsLocation = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "data_output", "Trigrams.txt");
+        public static string gardinerToMDCLocation = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "data_output", "gardinerToMDC.txt");
+        public static string gardinerListLocation = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "data_output", "gardinerSignList.txt");
     }
 }
