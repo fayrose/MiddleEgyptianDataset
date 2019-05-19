@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Unicode;
 using System.Text;
-using System.Threading.Tasks;
 
+/***
+ * This is a depreciated file for converting Gardiner signs into the Unicode 12.0 spec.
+ * At the given time, there appears to be no fonts that actually implement Unicode 12.0's format
+ * control's for heiroglyphics. I will leave this file in case this changes.
+ */
 namespace MiddleEgyptianDictionary.Services
 {
     public static class GardinerConverter
@@ -39,6 +43,39 @@ namespace MiddleEgyptianDictionary.Services
             return String.Join("", convertedGlyphs);
         }
 
+
+        internal static string ConvertMdCToUnicode(string input)
+        {
+            StringBuilder builder = new StringBuilder();
+            int currentIdx = 0;
+            char[] separators = new char[] { ' ', '&', ':', '*', '-', '_' };
+            string[] split = input.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string glyph in split)
+            {
+                currentIdx += glyph.Length;
+                int i = 1;
+                while (currentIdx + i < input.Length && separators.Contains(input.ElementAt(currentIdx + i)))
+                    i += 1;
+                string separator = currentIdx + i < input.Length ? input.Substring(currentIdx, i) : null;
+                currentIdx += i;
+                string fixed_glyph = FixIncongruentLettering(glyph);
+
+                if (gardinerConverter.ContainsKey(fixed_glyph.ToUpper()))
+                {
+                    builder.Append(gardinerConverter[fixed_glyph.ToUpper()]);
+                    if (! (separator is null))
+                        builder.Append(GetUnicodeSeparator(separator));
+                }
+                else
+                {
+                    builder.Append(" " + fixed_glyph + " ");
+                    if (!(separator is null))
+                        builder.Append(GetUnicodeSeparator(separator));
+                }
+            }
+            return builder.ToString();
+        }
+
         private static Dictionary<string, string> CreateUnicodeHashSet()
         {
             Dictionary<string, string> unicodeTable = new Dictionary<string, string>();
@@ -52,6 +89,33 @@ namespace MiddleEgyptianDictionary.Services
             return unicodeTable;
         }
 
+        private static string GetUnicodeSeparator(string mdc)
+        {
+            string answer = "";
+            foreach (char c in mdc)
+            {
+                switch (c)
+                {
+                    case '(':
+                        answer += char.ConvertFromUtf32(0x13437);
+                        break;
+                    case ')':
+                        answer += char.ConvertFromUtf32(0x13438);
+                        break;
+                    case ':':
+                        answer += char.ConvertFromUtf32(0x13430);
+                        break;
+                    case '*':
+                    case '&':
+                        answer += char.ConvertFromUtf32(0x13431);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return answer;
+        }
+        
         public static string FixIncongruentLettering(string glyph)
         {
             string answer = glyph;

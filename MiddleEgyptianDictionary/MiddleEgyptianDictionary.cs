@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MiddleEgyptianDictionary.Interfaces;
+using MiddleEgyptianDictionary.Models;
 using MiddleEgyptianDictionary.Parsing;
 using MiddleEgyptianDictionary.Services;
 using MongoDB.Bson;
@@ -29,8 +32,7 @@ namespace MiddleEgyptianDictionary
 
         public IEnumerable<BsonDocument> SerializeDictionaries()
         {
-            Serializer serializer = new Serializer();
-            return serializer.SerializeData(hashTracker.Values);
+            return Serializer.DataToBSon(hashTracker.Values);
         }
 
         public void WriteDictionaries(string path)
@@ -46,6 +48,7 @@ namespace MiddleEgyptianDictionary
 
         public static void Main(string[] args)
         {
+            
         }
     }
 }
