@@ -244,6 +244,7 @@
     </None>
     <None Include="Resources\DicksonDictionary_.pdf" />
     <None Include="Resources\MarkVygusDictionary.pdf" />
+    <None Include="Resources\VYGUS_Dictionary_2018.pdf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Lexicon.txt" />
