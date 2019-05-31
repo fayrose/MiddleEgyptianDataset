@@ -17,7 +17,8 @@ namespace MiddleEgyptianDictionary.Services
             settings.SslSettings =
               new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             var _client = new MongoClient(settings);
-            var _db = _client.GetDatabase("MiddleEgyptianDDbictionary");
+            _client.DropDatabase("MiddleEgyptianDictionary");
+            var _db = _client.GetDatabase("MiddleEgyptianDictionary");
 
             var entryCollection = _db.GetCollection<BsonDocument>("Entries");
             await entryCollection.InsertManyAsync(med.SerializeDictionaries());
