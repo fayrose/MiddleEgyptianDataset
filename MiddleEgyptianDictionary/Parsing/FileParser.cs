@@ -37,12 +37,13 @@ public abstract class FileParser
         if (!HashTracker.TryGetValue(hashString, out entry))
         {
             string mdc = Formatter.GetFormattedWord(signList);
+            string res = ManuelDeCodageToRESConverter.ConvertString(mdc);
             entry = new DictionaryEntry()
             {
                 Transliteration = transliterationChunk,
                 GardinerSigns = signList,
                 ManuelDeCodage = mdc,
-                Res = ManuelDeCodageToRESConverter.ConvertString(mdc)
+                Res = res.Equals(mdc) ? null : res
             };
             HashTracker.Add(hashString, entry);
         }
