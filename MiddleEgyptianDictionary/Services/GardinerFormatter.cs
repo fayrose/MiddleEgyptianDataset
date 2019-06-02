@@ -34,7 +34,7 @@ namespace MiddleEgyptianDictionary.Services
         {
             Builder = new GardinerFormatterBuilder(MDCTrigramBuilder.GenerateTrigrams());
             Dictionary<string, string> formattedDict = new Dictionary<string, string>();
-            foreach (string item in list)
+            foreach (string item in new HashSet<string>(list))
             {
                 Debug.WriteLine("Formatting " + (formattedDict.Count + 1).ToString() + " of " + list.Count().ToString());
                 string current = item.Replace("  ", " ");
