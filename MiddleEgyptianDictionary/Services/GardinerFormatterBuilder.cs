@@ -34,6 +34,10 @@ namespace MiddleEgyptianDictionary.Services
                         var possDic = Get2Possibility(Trigrams[key], splitWord);
                         possibilities = ConcatDicts(possibilities, possDic);
                     }
+                    if (possibilities.Count == 0)
+                    {
+                        return String.Join("-", splitWord);
+                    }
                     if (possibilities.Count == 1)
                     {
                         return String.Join(possibilities.Keys.SingleOrDefault(), splitWord);
@@ -185,15 +189,13 @@ namespace MiddleEgyptianDictionary.Services
             {
                 Match match = Regex.Match(item, splitWord[0] + @"((-|\*|:|&)_?)" + splitWord[1]);
                 string middle = match.Groups[1].ToString();
-                int multiplier = 1;
-                if (middle.Contains('_'))
+                if (!String.IsNullOrWhiteSpace(middle))
                 {
-                    Console.WriteLine("Found it!");
+                    if (middleCount.ContainsKey(middle))
+                        middleCount[middle] += 1;
+                    else
+                        middleCount.Add(middle, 1);
                 }
-                if (middleCount.ContainsKey(middle))
-                    middleCount[middle] += 1 * multiplier;
-                else
-                    middleCount.Add(middle, 1 * multiplier);
             }
             return middleCount;
         }

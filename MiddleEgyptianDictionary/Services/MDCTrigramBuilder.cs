@@ -137,12 +137,17 @@ namespace MiddleEgyptianDictionary.Services
 
         private static void ParseLine(string line)
         {
+            // By normalizing the trigrams before building them, the trigrams will
+            // be more relevant to dictionary definitions. This will improve formatting.
             int idx = 0;
             String[] splitLine = Regex.Split(line, @"\*|-|:|&");
             for (int i = 0; i < splitLine.Length - 2; i++)
             {
                 // Add trigram to dictionary if doesn't presently exist
-                String joined = String.Join(" ", new string[] { splitLine[i], splitLine[i+1], splitLine[i+2]});
+                string[] normalizedStrArr = new string[] { splitLine[i], splitLine[i + 1], splitLine[i + 2] }
+                                                        .Select(x => MDCToGardiner.NormalizeGardinerCode(x))
+                                                        .ToArray<string>();
+                String joined = String.Join(" ", normalizedStrArr);
                 int newIdx = splitLine[i].Length + splitLine[i + 1].Length + splitLine[i + 2].Length + 2;
                 if (!Trigrams.ContainsKey(joined))
                 {
@@ -150,7 +155,7 @@ namespace MiddleEgyptianDictionary.Services
                 }
 
                 // Add MDC value as sub-dictionary with value count
-                string mdcValue = line.Substring(idx, newIdx);
+                string mdcValue = MDCToGardiner.NormalizeGardinerString(line.Substring(idx, newIdx));
                 if (Trigrams[joined].ContainsKey(mdcValue))
                 {
                     Trigrams[joined][mdcValue] += 1;
