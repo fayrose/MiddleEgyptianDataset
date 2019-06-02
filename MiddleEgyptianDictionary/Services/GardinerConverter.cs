@@ -151,17 +151,16 @@ namespace MiddleEgyptianDictionary.Services
             if (firstZeroIdx != -1)
             {
                 answer = unicodeName.Substring(0, firstZeroIdx);
-                if (firstZeroIdx >= 0)
+
+                for (int i = firstZeroIdx; i < unicodeName.Length; i++)
                 {
-                    for (int i = firstZeroIdx; i < unicodeName.Length; i++)
+                    if (unicodeName[i] != '0')
                     {
-                        if (unicodeName[i] != '0')
-                        {
-                            answer += unicodeName.Substring(i);
-                            break;
-                        }
+                        answer += unicodeName.Substring(i);
+                        break;
                     }
                 }
+                
                 return answer;
             }
             else
