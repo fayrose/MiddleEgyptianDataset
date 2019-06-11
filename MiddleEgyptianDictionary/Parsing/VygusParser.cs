@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MiddleEgyptianDictionary.DictionaryParser
 {
@@ -103,160 +104,114 @@ namespace MiddleEgyptianDictionary.DictionaryParser
             int halfCount = wordList.Count / 2;
             for (int j = 0; j < halfCount; j++)
             {
-                ParseWordData(wordList[j * 2].Trim(), wordList[j * 2 + 1].Trim());
+                ParseWordDataRegex(wordList[j * 2].Trim(), wordList[j * 2 + 1].Trim());
                 //Console.WriteLine(String.Format("Page {0}: word {1}", pageNumber, j));
             }
 
             return dictList;
         }
-
-        private void ParseWordData(string wordData, string transliteration)
+        
+        private void ParseWordDataRegex(string wordData, string transliteration)
         {
-            string translationChunk = "", signChunk = "", posChunk = "";
-            int idxLeftBracket = wordData.IndexOf('[');
-            int idxRightBracket = wordData.LastIndexOf(']');
-            int idxLeftCurly = wordData.LastIndexOf('{');
-            int idxRightCurly = wordData.LastIndexOf('}');
-            int leftParen = wordData.IndexOf("(");
-            int rightParen = wordData.LastIndexOf(")");
-            int idxSplit = wordData.IndexOf("   ");
-            idxSplit = idxSplit == -1 ? idxSplit = wordData.IndexOf("  ") : idxSplit;
+            string partOfSpeech = "", translation = "", signString = "";
 
-            // If the part of the speech is defined for this word
-            if ((idxLeftBracket != -1) && (idxRightBracket != -1))
+            MatchCollection inBrackets = Regex.Matches(wordData, @"(\[((\w|\s|-|\.|')+)\])");
+            MatchCollection inCurly = Regex.Matches(wordData, @"(\{((\w|\s|-|\.|')+)\})");
+            MatchCollection inParen = Regex.Matches(wordData, @"(\(((\w|\s|-|\.|')+)\))");
+            MatchCollection CurlytoParen = Regex.Matches(wordData, @"(\{((\w|\s|-|\.|')+)\))");
+            MatchCollection BracketToParen = Regex.Matches(wordData, @"(\[((\w|\s|-|\.|')+)\))");
+            MatchCollection CurlyToApos = Regex.Matches(wordData, @"(\{(((\w|\s|-|\.)+)\')+)");
+            MatchCollection SplitSpacesToBracket = Regex.Matches(wordData, @"((\s\s(\s?))((\w|\s|-|\.|')+)\])");
+
+            int[] startCollection = new int[] { wordData.LastIndexOfAny(new char[] {'(' , '['}),
+                                                wordData.LastIndexOf("   "),
+                                                wordData.LastIndexOf("  ") }
+                                        .Where(x => x > -1 ).ToArray();
+            int[] endCollection = new int[] { wordData.LastIndexOfAny(new char[] { '}', ')', '\'', ']' }),
+                                              wordData.LastIndexOf("  "),
+                                              wordData.LastIndexOf("   ")};
+
+            int startIndex = startCollection.Min();
+            int endIndex = endCollection.Max();
+
+            if (inBrackets.Count > 0)
             {
-                Debug.Assert((idxRightBracket + 1) < wordData.Length);
+                partOfSpeech = inBrackets[inBrackets.Count - 1].Groups[2].Value;
+            }
 
-                translationChunk = wordData.Substring(0, idxLeftBracket);
-                posChunk = wordData.Substring(idxLeftBracket, idxRightBracket - idxLeftBracket).Substring(1);
-                if (idxRightCurly != -1 && idxRightCurly > idxRightBracket)
-                {
-                    signChunk = wordData.Substring(idxRightCurly + 1);
-                    if (idxRightCurly != -1 && idxLeftCurly != -1)
-                    {
-                        translationChunk += " ";
-                        translationChunk += wordData.Substring(idxLeftCurly, idxRightCurly - idxLeftCurly + 1);
-                        translationChunk += " ";
-                        if (rightParen > idxRightCurly)
-                        {
-                            translationChunk += wordData.Substring(leftParen, rightParen - leftParen + 1);
-                            signChunk = wordData.Substring(rightParen + 1);
-                        }
-                    }
-                }
-                else if (rightParen != -1 && rightParen > idxLeftCurly)
-                {
-                    signChunk = idxRightBracket > rightParen ?
-                                wordData.Substring(idxRightBracket + 1) :
-                                wordData.Substring(rightParen + 1);
-                    if (translationChunk.Last() != ' ')
-                        translationChunk += " ";
-                    if (idxLeftCurly != -1 && idxLeftCurly < rightParen)
-                        translationChunk += wordData.Substring(idxLeftCurly, rightParen - idxLeftCurly + 1);
-                    else if (leftParen != -1 && leftParen < rightParen)
-                        translationChunk += wordData.Substring(leftParen, rightParen - leftParen + 1);
-                    else if (idxLeftBracket != -1 && idxLeftBracket < rightParen)
-                        translationChunk += wordData.Substring(idxLeftBracket, rightParen - idxLeftBracket + 1);
-                }
-                else
-                {
-                    if (idxRightBracket < idxLeftCurly && idxRightCurly == -1)
-                    {
-                        // Can't use max in case aposAfterLeftCurly = -1 and lastApos > -1
-                        // as it would give an apostrophe within the translation, not after idxLeftCurly
-                        int aposAfterLeftCurly = wordData.IndexOf('\'', idxLeftCurly + 1);
-                        int lastApos = wordData.LastIndexOf('\'');
-                        aposAfterLeftCurly = lastApos > aposAfterLeftCurly ? lastApos : aposAfterLeftCurly;
+            Debug.Assert(startIndex > -1);
+            translation = wordData.Substring(0, startIndex);
 
-                        if (aposAfterLeftCurly != -1)
-                        {
-                            signChunk = wordData.Substring(aposAfterLeftCurly + 1);
-                            translationChunk += " " + wordData.Substring(idxLeftCurly, aposAfterLeftCurly - idxLeftCurly + 1) + "}";
-                        }
-                        else
-                            signChunk = wordData.Substring(idxLeftCurly + 1);
-                    }
-                    else if (idxSplit > idxRightBracket)
-                    {
-                        translationChunk = wordData.Substring(0, idxSplit);
-                        signChunk = wordData.Substring(idxSplit + 1);
-                    }
-                    else
-                    {
-                        signChunk = wordData.Substring(idxRightBracket + 1);
-                        signChunk = signChunk.Replace(" ? ", "");
-                    }
+            Debug.Assert(endIndex > -1);
+            signString = wordData.Substring(endIndex + 1);
+            
+            foreach (Match item in inCurly)
+            {
+                if (item.Index >= startIndex)
+                {
+                    translation += String.IsNullOrWhiteSpace(translation.LastOrDefault().ToString()) ? "" : " ";
+                    translation += item;
                 }
             }
-            // If only the sign list and the translation are defined
-            else
+
+            foreach (Match item in inParen)
             {
-                if (idxRightCurly != -1 )
+                if (item.Index >= startIndex)
                 {
-                    translationChunk = wordData.Substring(0, idxRightCurly + 1);
-                    signChunk = wordData.Substring(idxRightCurly + 2);
-                    int firstLeftCurly = wordData.IndexOf('{');
-                    if (firstLeftCurly != idxLeftCurly && idxRightBracket != -1)
-                    {
-                        translationChunk = translationChunk.Remove(firstLeftCurly, idxRightBracket - firstLeftCurly + 1);
-                        posChunk = wordData.Substring(firstLeftCurly + 1, idxRightBracket - firstLeftCurly - 1);
-                    }
+                    translation += String.IsNullOrWhiteSpace(translation.LastOrDefault().ToString()) ? "" : " ";
+                    translation += item;
                 }
-                else
-                {
-                    if (idxSplit == -1)
-                    {
-                        signChunk = wordData;
-                    }
-                    else
-                    {
-                        translationChunk = wordData.Substring(0, idxSplit);
-                        signChunk = wordData.Substring(idxSplit);
-
-                    }
-                }
-                if (idxRightCurly == -1 && idxLeftCurly != -1 && idxRightBracket > idxLeftCurly)
-                {
-                    translationChunk = wordData.Substring(0, idxRightBracket + 1);
-                    signChunk = wordData.Substring(idxRightBracket + 2);
-                }
-                else if (rightParen != -1 && rightParen > idxLeftCurly && rightParen > idxSplit)
-                {
-                    signChunk = wordData.Substring(rightParen + 1);
-                    if (translationChunk.LastOrDefault() != ' ')
-                    {
-                        translationChunk += " ";
-                    }
-                    if (idxLeftCurly != -1)
-                    {
-                        translationChunk += wordData.Substring(idxLeftCurly, rightParen - idxLeftCurly + 1);
-                    }
-                    else if (leftParen != -1)
-                    {
-                            
-                        translationChunk += wordData.Substring(leftParen, rightParen - leftParen + 1);
-                    }
-                  
-                }
-                else if (idxRightBracket != -1 && idxRightBracket > idxSplit && idxSplit != -1 && translationChunk.Length == 0)
-                {
-                    translationChunk = wordData.Substring(0, idxSplit);
-                    posChunk = wordData.Substring(idxSplit, idxRightBracket - idxSplit);
-                    signChunk = wordData.Substring(idxRightBracket + 1);
-                }
-
             }
+
+            foreach (Match item in CurlytoParen)
+            {
+                if (item.Index >= startIndex)
+                {
+                    translation += String.IsNullOrWhiteSpace(translation.LastOrDefault().ToString()) ? "" : " ";
+                    translation += item.ToString().Substring(0, item.Length - 1) + '}';
+                }
+            }
+
+            foreach (Match item in BracketToParen)
+            {
+                if (item.Index >= startIndex)
+                {
+                    translation += String.IsNullOrWhiteSpace(translation.LastOrDefault().ToString()) ? "" : " ";
+                    translation += item.ToString().Substring(0, item.Length - 1) + ']';
+                }
+            }
+
+            foreach (Match item in CurlyToApos)
+            {
+                if (item.Index >= startIndex && wordData.IndexOf('}') == -1)
+                {
+                    translation += String.IsNullOrWhiteSpace(translation.LastOrDefault().ToString()) ? "" : " ";
+                    translation += item;
+                    translation += '}';
+                }
+            }
+
+            foreach (Match item in SplitSpacesToBracket)
+            {
+                if (item.Index >= startIndex && wordData.IndexOf('[') == -1) // TODO : Add condition where not in [ .. ]
+                {
+                    translation += String.IsNullOrWhiteSpace(translation.LastOrDefault().ToString()) ? "" : " ";
+                    translation += item;
+                }
+            }
+            
             // Remove extraneous whitespace in string
-            signChunk = String.Join(" ", signChunk.Split(new string[] { " - ", "-", " "}, StringSplitOptions.RemoveEmptyEntries));
-            string transliterationChunk = String.Join(" ", transliteration.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            posChunk = String.Join(" ", posChunk.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            translationChunk = String.Join(" ", translationChunk.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            signString = String.Join(" ", signString.Split(new string[] { " - ", "-", " " }, StringSplitOptions.RemoveEmptyEntries));
+            transliteration = String.Join(" ", transliteration.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            partOfSpeech = String.Join(" ", partOfSpeech.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            translation = String.Join(" ", translation.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
 
-            CreateEntry(transliterationChunk.Trim(),
-                translationChunk.Trim(),
-                posChunk.Trim(),
-                signChunk.Trim(),
+            CreateEntry(transliteration.Trim(),
+                translation.Trim(),
+                partOfSpeech.Trim(),
+                signString.Trim(),
                 DataSource.vygus);
+
         }
     }
 }
