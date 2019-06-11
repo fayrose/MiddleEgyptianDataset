@@ -230,6 +230,7 @@
     <Compile Include="Services\ManuelDeCodageToRESConverter.cs" />
     <Compile Include="Services\MDCToGardiner.cs" />
     <Compile Include="Services\MDCTrigramBuilder.cs" />
+    <Compile Include="Services\PartOfSpeechParser.cs" />
     <Compile Include="Services\Serializer.cs" />
     <Compile Include="Services\TransliterationConverter.cs" />
     <Compile Include="Services\UnicodeDictionaryBuilder.cs" />

@@ -31,8 +31,9 @@ public abstract class FileParser
         DictionaryEntry entry;
         // Generate hash string
         string hashString = transliterationChunk + "/" + signList.ToUpper();
-        posChunk = FixPartOfSpeech(posChunk);
-        signList = signList.Replace("  ", " ").ToUpper();
+        posChunk = PartOfSpeechParser.FixPartOfSpeech(posChunk);
+        signList = signList.Replace("  ", " ").ToUpper().Replace("J", "AA");
+
         // Check if the HashTracker contains the hashstring
         if (!HashTracker.TryGetValue(hashString, out entry))
         {
@@ -71,16 +72,4 @@ public abstract class FileParser
         return entry;
 
     }
-    
-    private string FixPartOfSpeech(string posString)
-    {
-        if (posString == null)
-            return null;
-        string fixedPoS = posString.Replace(" n.", "noun");
-        fixedPoS = posString.Replace("v.", "verb");
-        fixedPoS = fixedPoS.Replace("adj.", "adjective");
-        fixedPoS = fixedPoS.Replace("prn.", "pronoun");
-        return fixedPoS;
-    }
-
 }
