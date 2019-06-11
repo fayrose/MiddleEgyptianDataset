@@ -134,16 +134,25 @@ namespace MiddleEgyptianDictionary.DictionaryParser
             int startIndex = startCollection.Min();
             int endIndex = endCollection.Max();
 
-            if (inBrackets.Count > 0)
-            {
-                partOfSpeech = inBrackets[inBrackets.Count - 1].Groups[2].Value;
-            }
-
             Debug.Assert(startIndex > -1);
             translation = wordData.Substring(0, startIndex);
 
             Debug.Assert(endIndex > -1);
             signString = wordData.Substring(endIndex + 1);
+
+            int posIndex = ChoosePartOfSpeech(wordData, inBrackets);
+            if (posIndex != -1)
+            {
+                partOfSpeech = inBrackets[posIndex].Groups[2].Value;
+                for (int i = 0; i < inBrackets.Count; i++)
+                {
+                    if (i != posIndex && inBrackets[i].Index > startIndex)
+                    {
+                        translation += String.IsNullOrWhiteSpace(translation.LastOrDefault().ToString()) ? "" : " ";
+                        translation += inBrackets[i];
+                    }
+                }
+            }
             
             foreach (Match item in inCurly)
             {
@@ -211,6 +220,31 @@ namespace MiddleEgyptianDictionary.DictionaryParser
                 partOfSpeech.Trim(),
                 signString.Trim(),
                 DataSource.vygus);
+
+        }
+
+        private int ChoosePartOfSpeech(string wordData, MatchCollection inBrackets)
+        {
+            switch (inBrackets.Count)
+            {
+                case 0:
+                    return -1;
+                case 1:
+                    return 0; //inBrackets[0].Groups[2].Value;
+                case int count when count > 1:
+                    for (int i = 0; i < count; i++)
+                    {
+                        string pos = inBrackets[i].Groups[2].Value;
+                        if (pos.Contains("verb") || pos.Contains("noun"))
+                        {
+                            return i; //pos;
+                        }
+                    }
+                    return count - 1;
+                default:
+                    return -1;
+            }
+           
 
         }
     }
