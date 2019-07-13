@@ -230,14 +230,14 @@ namespace MiddleEgyptianDictionary.DictionaryParser
                 case 0:
                     return -1;
                 case 1:
-                    return 0; //inBrackets[0].Groups[2].Value;
+                    return 0;
                 case int count when count > 1:
                     for (int i = 0; i < count; i++)
                     {
                         string pos = inBrackets[i].Groups[2].Value;
                         if (pos.Contains("verb") || pos.Contains("noun"))
                         {
-                            return i; //pos;
+                            return i;
                         }
                     }
                     return count - 1;
