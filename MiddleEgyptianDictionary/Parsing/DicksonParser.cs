@@ -3,8 +3,10 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace MiddleEgyptianDictionary.DictionaryParser
 {
@@ -113,7 +115,20 @@ namespace MiddleEgyptianDictionary.DictionaryParser
                 posChunk = "";
             }
             string gardinerChunk = input.Substring(idxLCurly + 1, (idxRCurly - idxLCurly - 1));
-            CreateEntry(translitChunk, translationChunk.Trim(), posChunk, gardinerChunk, DataSource.dickson);
+            CreateEntry(translitChunk, translationChunk.Trim(), posChunk, FixDoubledGardinerIds(gardinerChunk), DataSource.dickson);
+        }
+
+        public static string FixDoubledGardinerIds(string gardinerChunk)
+        {
+            string answer = gardinerChunk;
+            var matches = Regex.Matches(gardinerChunk, @"(([A-Za-z]|Aa)[0-9]+){2,}");
+            for (int i = 0; i < matches.Count; i++)
+            {
+                var captures = matches[i].Groups[1].Captures;
+                var reconstructed = String.Join(" ", captures.OfType<Capture>().Select(x => x.Value).ToArray());
+                answer = answer.Replace(matches[i].Groups[0].Value, reconstructed);
+            }
+            return answer;
         }
     }
 }
