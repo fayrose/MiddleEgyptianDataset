@@ -19,9 +19,8 @@ namespace MiddleEgyptianDictionary.Services
             var _client = new MongoClient(settings);
             _client.DropDatabase("MiddleEgyptianDictionary");
             var _db = _client.GetDatabase("MiddleEgyptianDictionary");
-
-            var entryCollection = _db.GetCollection<BsonDocument>("Entries");
-            await entryCollection.InsertManyAsync(med.SerializeDictionaries());
+            var entryCollection = _db.GetCollection<DictionaryEntry>("Entries");
+            await entryCollection.InsertManyAsync(med.GetEntries());
         }
     }
 }
