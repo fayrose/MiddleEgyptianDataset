@@ -28,6 +28,7 @@ namespace MiddleEgyptianDictionary.Services
             {
                 switch (splitPos[i])
                 {
+                    // PARTS OF SPEECH
                     case "n.":
                     case "vnoun":
                         splitPos[i] = Constants.Noun;
@@ -92,10 +93,47 @@ namespace MiddleEgyptianDictionary.Services
                     case "prep.":
                         splitPos[i] = Constants.Preposition;
                         break;
+
+                    // SEMANTIC
+                    case "ani.":
+                    case "ani":
+                        splitPos[i] = "animal";
+                        break;
+                    case "min.":
+                    case "min":
+                        splitPos[i] = "mineral";
+                        break;
+                    case "arch.":
+                    case "arch":
+                        splitPos[i] = "architecture";
+                        break;
+                    case "div.":
+                    case "div":
+                        splitPos[i] = "divinity";
+                        break;
+                    case "loc.":
+                    case "loc":
+                        splitPos[i] = "location";
+                        break;
+                    case "bod.":
+                    case "bod":
+                        splitPos[i] = "body";
+                        break;
+                    case "med.":
+                        splitPos[i] = "medical";
+                        break;
+                    case "astro.":
+                    case "astro":
+                        splitPos[i] = "astronomy";
+                        break;
+                    case "furn.":
+                    case "furn":
+                        splitPos[i] = "furniture";
+                        break;
                     default: break;
                 }
                 splitPos[i] = splitPos[i].Trim(new char[] { '.', '-', '[', ']', ',', '}', '{' });
-                posSet.Add(partOfSpeech);
+                posSet.Add(splitPos[i]);
             }
             return string.Join(" ", splitPos);
         }
