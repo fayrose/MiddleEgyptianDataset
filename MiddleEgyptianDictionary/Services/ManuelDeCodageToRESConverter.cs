@@ -43,11 +43,12 @@ namespace MiddleEgyptianDictionary.Services
             dic.Add("W14A", "V28*W14:[sep=0.3,fit]O34");
             dic.Add("W24A", "W24*[sep=0.1]W24*[sep=0.1]W24");
             dic.Add("T26F", "T26");
+            dic.Add("A51&X1", "insert[b,sep=0.2](A51,X1)");
             string answer = MdC;
             foreach (var key in dic.Keys)
                 answer = answer.Replace(key, dic[key]);
             
-            return ConvertNumbers(answer);
+            return ConvertNumbers(answer).Replace('&', ':');
         }
 
         private static string ConvertNumbers(string MdC)
@@ -101,6 +102,9 @@ namespace MiddleEgyptianDictionary.Services
             dic.Add("Z2B", "D67*[sep=0.5]D67*[sep=0.5]D67");
             dic.Add("Z2C", "Z1:[fix,sep=0.3]Z1*[sep=2.0]Z1");
             dic.Add("Z2D", "Z1*[sep=2.0]Z1:[fix,sep=0.3]Z1");
+            dic.Add("A14&Z2", "insert[bs,sep=0.5](A14,Z1*[sep=1.5]Z1*[sep=1.5]Z1)");
+            dic.Add("A17&Z2", "insert[be](A17*[sep=0.0]empty[width=0.2,height=0.0],Z1*Z1*Z1)");
+            dic.Add("A24&Z2D", "insert[te,sep=0.5](A24*[sep=0.0]empty[width=0.3],Z1*[sep=0.5]Z1*[sep=0.5]Z1)");
             dic.Add("Z2", "Z1*[sep=2.0]Z1*[sep=2.0]Z1");
             dic.Add("Z3A", "Z1[rotate=90]:Z1[rotate=90]:Z1[rotate=90]");
             dic.Add("Z3B", "D67:D67:D67");
