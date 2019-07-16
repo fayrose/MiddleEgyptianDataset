@@ -44,7 +44,7 @@ public abstract class FileParser
                 Transliteration = transliterationChunk,
                 GardinerSigns = signList,
                 ManuelDeCodage = mdc,
-                Res = res.Equals(mdc) ? null : res
+                Res = res.Equals(mdc) ? null : res.Replace("AA", "Aa")
             };
             HashTracker.Add(hashString, entry);
         }
