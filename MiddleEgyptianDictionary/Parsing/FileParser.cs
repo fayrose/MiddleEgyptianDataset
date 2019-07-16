@@ -43,7 +43,7 @@ public abstract class FileParser
             {
                 Transliteration = transliterationChunk,
                 GardinerSigns = signList,
-                ManuelDeCodage = mdc,
+                ManuelDeCodage = mdc.Replace("AA", "Aa"),
                 Res = res.Equals(mdc) ? null : res.Replace("AA", "Aa")
             };
             HashTracker.Add(hashString, entry);
