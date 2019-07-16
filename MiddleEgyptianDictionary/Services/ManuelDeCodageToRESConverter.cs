@@ -42,7 +42,7 @@ namespace MiddleEgyptianDictionary.Services
             dic.Add("W3A", "W3[yscale=0.7]");
             dic.Add("W14A", "V28*W14:[sep=0.3,fit]O34");
             dic.Add("W24A", "W24*[sep=0.1]W24*[sep=0.1]W24");
-            
+            dic.Add("T26F", "T26");
             string answer = MdC;
             foreach (var key in dic.Keys)
                 answer = answer.Replace(key, dic[key]);
@@ -54,10 +54,10 @@ namespace MiddleEgyptianDictionary.Services
         {
             string answer = MdC;
             Dictionary<String, String> dic = new Dictionary<string, string>();
-            dic.Add("Z15", "Z1");
             dic.Add("Z15A", "Z1*Z1");
             dic.Add("Z15B", "Z1*Z1*Z1");
             dic.Add("Z15C", "Z1*Z1*Z1*Z1");
+            dic.Add("Z15", "Z1");
             dic.Add("Z15I", ".*[sep=0]Z1*Z1*[sep=0].:Z1*Z1*Z1");
             dic.Add("V20I", "V20*V20");
             dic.Add("V20J", "V20*V20*V20");
@@ -97,14 +97,14 @@ namespace MiddleEgyptianDictionary.Services
             dic.Add("M12G", "M12*[fix,sep=0.3]M12*[fix,sep=0.3]M12*[fix,sep=0.3]M12:[fix,sep=0.3]M12*[fix,sep=0.3]M12*[fix,sep=0.3]M12*[fix,sep=0.3]M12");
             dic.Add("M12H", "M12*[fix,sep=0.3]M12*[fix,sep=0.3]M12:[fix,sep=0.3]M12*[fix,sep=0.3]M12*[fix,sep=0.3]M12:[fix,sep=0.3]M12*[fix,sep=0.3]M12*[fix,sep=0.3]M12");
             dic.Add("N33A", "N33*[sep=0.5]N33*[sep=0.5] N33");
-            dic.Add("Z2", "Z1*[sep=2.0]Z1*[sep=2.0]Z1");
             dic.Add("Z2A", "Z1*Z1*Z1");
             dic.Add("Z2B", "D67*[sep=0.5]D67*[sep=0.5]D67");
             dic.Add("Z2C", "Z1:[fix,sep=0.3]Z1*[sep=2.0]Z1");
             dic.Add("Z2D", "Z1*[sep=2.0]Z1:[fix,sep=0.3]Z1");
-            dic.Add("Z3", "Z1:[sep=0.3]Z1:[sep=0.3]Z1");
+            dic.Add("Z2", "Z1*[sep=2.0]Z1*[sep=2.0]Z1");
             dic.Add("Z3A", "Z1[rotate=90]:Z1[rotate=90]:Z1[rotate=90]");
             dic.Add("Z3B", "D67:D67:D67");
+            dic.Add("Z3", "Z1:[sep=0.3]Z1:[sep=0.3]Z1");
             dic.Add("Z4A", "Z1*[sep=2]Z1");
             foreach (var key in dic.Keys)
                 answer = answer.Replace(key, dic[key]);
