@@ -235,7 +235,7 @@ namespace MiddleEgyptianDictionary.DictionaryParser
                     for (int i = 0; i < count; i++)
                     {
                         string pos = inBrackets[i].Groups[2].Value;
-                        if (pos.Contains("verb") || pos.Contains("noun"))
+                        if (pos.Contains(Constants.Verb) || pos.Contains(Constants.Noun))
                         {
                             return i;
                         }
