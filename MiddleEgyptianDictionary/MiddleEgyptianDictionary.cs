@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using MiddleEgyptianDictionary.Interfaces;
-using MiddleEgyptianDictionary.Models;
 using MiddleEgyptianDictionary.Parsing;
 using MiddleEgyptianDictionary.Services;
 using MongoDB.Bson;
@@ -46,9 +46,18 @@ namespace MiddleEgyptianDictionary
             }
         }
 
+        public IEnumerable<DictionaryEntry> GetEntries()
+        {
+            return hashTracker.Values.ToArray();
+        }
+
         public static void Main(string[] args)
         {
-            
+            MiddleEgyptianDictionary med = new MiddleEgyptianDictionary();
+            med.CreateDictionaries();
+            var task = Task.Run(async () => { await DbWriter.WriteToDbAsync(med); });
+            task.Wait();
+            Console.WriteLine("Dictionaries written to database!");
         }
     }
 }

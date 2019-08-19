@@ -20,7 +20,7 @@ namespace MiddleEgyptianDictionary.DictionaryParser
                            bool is2018 = false) :
             base(pdfName, hashTracker)
         {
-            startPage = is2018 ? 1 :Constants.Vygus2012FirstPage;
+            startPage = is2018 ? 1 : Constants.Vygus2012FirstPage;
             endPage = is2018 ? Constants.Vygus2018LastPage : Constants.Vygus2012LastPage;
             this.is2018 = is2018;
         }
