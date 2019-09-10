@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using MiddleEgyptianDictionary.Interfaces;
 using MiddleEgyptianDictionary.Parsing;
 using MiddleEgyptianDictionary.Services;
@@ -53,11 +51,6 @@ namespace MiddleEgyptianDictionary
 
         public static void Main(string[] args)
         {
-            MiddleEgyptianDictionary med = new MiddleEgyptianDictionary();
-            med.CreateDictionaries();
-            var task = Task.Run(async () => { await DbWriter.WriteToDbAsync(med); });
-            task.Wait();
-            Console.WriteLine("Dictionaries written to database!");
         }
     }
 }

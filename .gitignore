@@ -259,3 +259,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/MiddleEgyptianDictionary/stanford-english-corenlp-2018-10-05-models.jar
