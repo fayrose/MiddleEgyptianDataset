@@ -4,6 +4,7 @@ using System.Linq;
 using MiddleEgyptianDictionary;
 using MiddleEgyptianDictionary.Models;
 using MiddleEgyptianDictionary.Services;
+using MongoDB.Bson;
 
 public abstract class FileParser
 {
@@ -21,7 +22,7 @@ public abstract class FileParser
 
     public abstract void ParseAll();
 
-    public DictionaryEntry CreateEntry(string transliterationChunk,
+    public void CreateEntry(string transliterationChunk,
                                          string translationChunk,
                                          string posChunk,
                                          string signList,
@@ -41,6 +42,7 @@ public abstract class FileParser
             string res = ManuelDeCodageToRESConverter.ConvertString(mdc);
             entry = new DictionaryEntry()
             {
+                Id = ObjectId.GenerateNewId(),
                 Transliteration = transliterationChunk,
                 GardinerSigns = signList,
                 ManuelDeCodage = mdc.Replace("AA", "Aa"),
@@ -48,12 +50,24 @@ public abstract class FileParser
             };
             HashTracker.Add(hashString, entry);
         }
-
-        Translation currentTranslation = entry.Translations.Where(x => x.translation == translationChunk.Trim()).FirstOrDefault();
+        translationChunk = translationChunk.Replace("''", "'").Trim();
+        Translation currentTranslation = entry.Translations.Where(x => x.translation == translationChunk).FirstOrDefault();
         if (currentTranslation == default(Translation))
         {
-            currentTranslation = new Translation() { translation = translationChunk.Trim() };
-            entry.Translations.Add(currentTranslation);
+            bool appendedToExistingEntry = false;
+            if (string.IsNullOrWhiteSpace(translationChunk))
+            {
+                currentTranslation = entry.Translations.Where(x => x.TranslationMetadata.PartOfSpeech is null).FirstOrDefault();
+                if (!(currentTranslation is null))
+                {
+                    appendedToExistingEntry = true;
+                }
+            }
+            if (!appendedToExistingEntry)
+            {
+                currentTranslation = new Translation() { translation = translationChunk };
+                entry.Translations.Add(currentTranslation);
+            }
         }
         Metadata existingMetadata = currentTranslation.TranslationMetadata;
         bool notDuplicate = existingMetadata != null && 
@@ -69,7 +83,5 @@ public abstract class FileParser
                 metadata.PartOfSpeech = posChunk.Trim();
             }
         }
-        return entry;
-
     }
 }

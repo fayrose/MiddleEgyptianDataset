@@ -108,6 +108,13 @@ namespace MiddleEgyptianDictionary.DictionaryParser
             {
                 posChunk = input.Substring(idxLParen + 1, (idxRParen - idxLParen - 1));
                 translationChunk = input.Substring(idxRParen + 2, (idxLCurly - idxRParen - 2));
+
+
+                if (String.IsNullOrWhiteSpace(translationChunk) && !String.IsNullOrWhiteSpace(posChunk))
+                {
+                    translationChunk = posChunk;
+                    posChunk = "";
+                }
             }
             else
             {

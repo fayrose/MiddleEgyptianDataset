@@ -105,7 +105,6 @@ namespace MiddleEgyptianDictionary.DictionaryParser
             for (int j = 0; j < halfCount; j++)
             {
                 ParseWordDataRegex(wordList[j * 2].Trim(), wordList[j * 2 + 1].Trim());
-                //Console.WriteLine(String.Format("Page {0}: word {1}", pageNumber, j));
             }
 
             return dictList;
@@ -115,13 +114,13 @@ namespace MiddleEgyptianDictionary.DictionaryParser
         {
             string partOfSpeech = "", translation = "", signString = "";
 
-            MatchCollection inBrackets = Regex.Matches(wordData, @"(\[((\w|\s|-|\.|')+)\])");
-            MatchCollection inCurly = Regex.Matches(wordData, @"(\{((\w|\s|-|\.|')+)\})");
-            MatchCollection inParen = Regex.Matches(wordData, @"(\(((\w|\s|-|\.|')+)\))");
-            MatchCollection CurlytoParen = Regex.Matches(wordData, @"(\{((\w|\s|-|\.|')+)\))");
-            MatchCollection BracketToParen = Regex.Matches(wordData, @"(\[((\w|\s|-|\.|')+)\))");
-            MatchCollection CurlyToApos = Regex.Matches(wordData, @"(\{(((\w|\s|-|\.)+)\')+)");
-            MatchCollection SplitSpacesToBracket = Regex.Matches(wordData, @"((\s\s(\s?))((\w|\s|-|\.|')+)\])");
+            MatchCollection inBrackets = Regex.Matches(wordData, @"(\[((\w|\s|-|\.|'|\?)+)\])");
+            MatchCollection inCurly = Regex.Matches(wordData, @"(\{((\w|\s|-|\.|'|\?)+)\})");
+            MatchCollection inParen = Regex.Matches(wordData, @"(\(((\w|\s|-|\.|'|\?|,|/|&)+)\))");
+            MatchCollection CurlytoParen = Regex.Matches(wordData, @"(\{((\w|\s|-|\.|'|\?)+)\))");
+            MatchCollection BracketToParen = Regex.Matches(wordData, @"(\[((\w|\s|-|\.|'|\?)+)\))");
+            MatchCollection CurlyToApos = Regex.Matches(wordData, @"(\{(((\w|\s|-|\.|\?)+)\')+)");
+            MatchCollection SplitSpacesToBracket = Regex.Matches(wordData, @"((\s\s(\s?))((\w|\s|-|\.|'|\?)+)\])");
 
             int[] startCollection = new int[] { wordData.LastIndexOfAny(new char[] {'(' , '['}),
                                                 wordData.LastIndexOf("   "),
