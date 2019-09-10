@@ -2,6 +2,8 @@
 using System.Linq;
 using MiddleEgyptianDictionary.Services;
 using MiddleEgyptianDictionary.Models;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 
 namespace MiddleEgyptianDictionary
 {
@@ -11,6 +13,8 @@ namespace MiddleEgyptianDictionary
         {
             this.Translations = new HashSet<Translation>();
         }
+        [BsonId]
+        public ObjectId Id { get; set; }
         public string Transliteration { get; set; }
         public string GardinerSigns { get; set; }
         public string ManuelDeCodage { get; set; }
@@ -23,7 +27,5 @@ namespace MiddleEgyptianDictionary
                    "(" + this.Transliteration + "): " + 
                    this.Translations.FirstOrDefault().translation;  
         }
-
-
     }
 }
