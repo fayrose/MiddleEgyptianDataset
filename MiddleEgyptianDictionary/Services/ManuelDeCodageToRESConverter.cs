@@ -23,6 +23,7 @@ namespace MiddleEgyptianDictionary.Services
             { "W14A", "W14a" },
             { "W24A", "W24a" },
             { "T26F", "T26" },
+            { "T26H", "T26" },
             { "A51&X1", "insert[b,sep=0.2](A51,X1)" },
             { "Y1V", "Y1a" },
 
@@ -131,6 +132,7 @@ namespace MiddleEgyptianDictionary.Services
             { "V5A", "V5[rotate=330]" },
             { "W15B", "W15" },
             { "W21A", "W21" },
+            { "X3A", "X3" },
             { "Y2V", "Y1A" },
             { "Y8A", "Y8" },
             { "Z11A", "Z11" },
