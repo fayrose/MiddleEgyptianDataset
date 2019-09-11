@@ -1,6 +1,5 @@
-﻿using edu.stanford.nlp.simple;
-using MiddleEgyptianDictionary.Models;
-using MongoDB.Bson;
+﻿using MiddleEgyptianDictionary.Models;
+using Porter2Stemmer;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -9,15 +8,17 @@ using System.Linq;
 
 namespace MiddleEgyptianDictionary
 {
-    class KeywordGenerator
+    public class KeywordGenerator
     {
         private readonly ImmutableArray<string> StopWords;
         Dictionary<string, KeywordSearch> KeywordTable;
+        private readonly EnglishPorter2Stemmer Stemmer;
 
         public KeywordGenerator(string stopwordsLocation)
         {
             StopWords = GetStopWords(stopwordsLocation);
             KeywordTable = new Dictionary<string, KeywordSearch>();
+            Stemmer = new EnglishPorter2Stemmer();
         }
 
         private ImmutableArray<string> GetStopWords(string stopwordsLocation)
@@ -34,16 +35,19 @@ namespace MiddleEgyptianDictionary
 
         public void GenerateKeywordsFromEntries(IEnumerable<DictionaryEntry> entries)
         {
-            foreach (DictionaryEntry entry in entries)
+            var entriesArr = entries.ToArray();
+            EnglishPorter2Stemmer stemmer = new EnglishPorter2Stemmer();
+            int count = entriesArr.Count();
+            for (int j = 0; j < count; j++)
             {
+                DictionaryEntry entry = entriesArr[j];
+                Console.WriteLine("Entry " + (j + 1).ToString() + " of " + count.ToString());
                 foreach (Translation translationObj in entry.Translations)
                 {
                     var withoutStopWords = SanitizeSearchInput(translationObj.translation, translationObj.TranslationMetadata.PartOfSpeech);
 
                     for (int i = 0; i < withoutStopWords.Count(); i++)
                     {
-                        withoutStopWords[i] = String.Join(" ", new Sentence(withoutStopWords[i]).lemmas().toArray()).ToLower();
-
                         if (KeywordTable.ContainsKey(withoutStopWords[i]))
                         {
                             KeywordTable[withoutStopWords[i]].AddIdToEntryIds(entry.Id);
@@ -79,7 +83,7 @@ namespace MiddleEgyptianDictionary
             {
                 withoutStopWords = partOfSpeech.Split();
             }
-            return withoutStopWords;
+            return withoutStopWords.Select(x => Stemmer.Stem(x).Value.ToLower()).ToArray();
         }
 
         public IEnumerable<KeywordSearch> GetKeywordSearchList()
