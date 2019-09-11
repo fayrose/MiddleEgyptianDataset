@@ -164,11 +164,111 @@ namespace MiddleEgyptianDictionary.Properties {
         ///E17,zAb
         ///E22,mAi
         ///E23,l
-        ///E2 [rest of string was truncated]&quot;;.
+        ///E23,rw
+        ///E24,Aby
+        ///E34,wn
+        ///E6,zzmt
+        ///F12,wsr
+        ///F13,wp
+        ///F16,db
+        ///F18,Hw
+        ///F18, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string MdcToGardiner {
             get {
                 return ResourceManager.GetString("MdcToGardiner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to a
+        ///about
+        ///above
+        ///ac
+        ///according
+        ///accordingly
+        ///across
+        ///actually
+        ///ad
+        ///adj
+        ///af
+        ///after
+        ///afterwards
+        ///again
+        ///against
+        ///al
+        ///albeit
+        ///all
+        ///almost
+        ///alone
+        ///along
+        ///already
+        ///als
+        ///also
+        ///although
+        ///always
+        ///am
+        ///among
+        ///amongst
+        ///an
+        ///and
+        ///another
+        ///any
+        ///anybody
+        ///anyhow
+        ///anyone
+        ///anything
+        ///anyway
+        ///anywhere
+        ///ap
+        ///apart
+        ///apparently
+        ///are
+        ///aren
+        ///arise
+        ///around
+        ///as
+        ///aside
+        ///at
+        ///au
+        ///auf
+        ///aus
+        ///aux
+        ///av
+        ///avec
+        ///away
+        ///b
+        ///be
+        ///became
+        ///because
+        ///become
+        ///becomes
+        ///becoming
+        ///been
+        ///before
+        ///beforehand
+        ///began
+        ///begin
+        ///beginning
+        ///begins
+        ///behind
+        ///bei
+        ///being
+        ///below
+        ///beside
+        ///besides
+        ///best
+        ///better
+        ///between
+        ///beyond
+        ///billion
+        ///both
+        ///briefly
+        ///but [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string StopWords {
+            get {
+                return ResourceManager.GetString("StopWords", resourceCulture);
             }
         }
     }

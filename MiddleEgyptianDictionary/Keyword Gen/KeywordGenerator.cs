@@ -1,9 +1,9 @@
 ﻿using MiddleEgyptianDictionary.Models;
+using MiddleEgyptianDictionary.Properties;
 using Porter2Stemmer;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 
 namespace MiddleEgyptianDictionary
@@ -14,23 +14,18 @@ namespace MiddleEgyptianDictionary
         Dictionary<string, KeywordSearch> KeywordTable;
         private readonly EnglishPorter2Stemmer Stemmer;
 
-        public KeywordGenerator(string stopwordsLocation)
+        public KeywordGenerator()
         {
-            StopWords = GetStopWords(stopwordsLocation);
+            StopWords = GetStopWords();
             KeywordTable = new Dictionary<string, KeywordSearch>();
             Stemmer = new EnglishPorter2Stemmer();
         }
 
-        private ImmutableArray<string> GetStopWords(string stopwordsLocation)
+        private ImmutableArray<string> GetStopWords()
         {
-            StreamReader reader = File.OpenText(stopwordsLocation);
-            List<string> stopWords = new List<string>();
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                stopWords.Add(line);
-            }
-            return stopWords.ToImmutableArray();
+            return Resources.StopWords
+                            .Split('\n')
+                            .ToImmutableArray();
         }
 
         public void GenerateKeywordsFromEntries(IEnumerable<DictionaryEntry> entries)
