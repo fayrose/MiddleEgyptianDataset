@@ -50,12 +50,19 @@ To Create All Dictionaries:
 
     MiddleEgyptianDictionary med = new MiddleEgyptianDictionary();
     med.CreateDictionaries();
-    Console.WriteLine("Dictionaries created!");
+    
+To Create Keyword Generator that goes with dictionaries:
 
-Write Dictionaries to Database:
+    KeywordGenerator keywordGenerator = new KeywordGenerator();
+    keywordGenerator.GenerateKeywordsFromEntries(med.GetEntries());
 
-    var task = Task.Run(async () => { await DbWriter.WriteToDbAsync(med); });
-    task.Wait();
-    Console.WriteLine("Dictionaries added to database!");
+Write dictionaries and keywords to Database:
 
-< More to add on Trigram model and caching >
+    DbManager manager = new DbManager();
+    var task1 = Task.Run(async () => { await manager.WriteEntriesToDbAsync(med.GetEntries()); });
+    var task2 = Task.Run(async () => { await manager.WriteKeywordsToDbAsync(keywordGenerator.GetKeywordSearchList()); });
+    task1.Wait();
+    task2.Wait();
+
+
+In order to create the formatted dictionary from scratch, delete ~/data_output/gardinerToMDC.txt . To create the trigrams from scratch, delete ~/data_output/Trigrams.txt. Please do not delete ~/data_output/gardinerSignList.txt.
