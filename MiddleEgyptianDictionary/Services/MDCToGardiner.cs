@@ -14,7 +14,7 @@ namespace MiddleEgyptianDictionary.Services
         
         private static Dictionary<String, String> BuildPhoneticsToGardiner()
         {
-            String[] arr = Resources.MdcToGardiner.Split('\n');
+            String[] arr = Resources.MdcToGardiner.Replace("\r", "").Split('\n');
             Dictionary<String, String> dic = new Dictionary<string, string>();
             foreach (String line in arr) {
                 String[] splitLine = line.Split(',');

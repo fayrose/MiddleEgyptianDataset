@@ -1,4 +1,5 @@
 ﻿using MiddleEgyptianDictionary.Parsing;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,6 +12,9 @@ namespace MiddleEgyptianDictionary.Services
     static class MDCTrigramBuilder
     {
         static Dictionary<string, Dictionary<string, int>> Trigrams = new Dictionary<string, Dictionary<string, int>>();
+
+        // Only collected while ExportPreprocessedLines is running
+        static List<string> preprocessedLines = null;
 
         public static Dictionary<string, Dictionary<string, int>> GenerateTrigrams()
         {
@@ -44,6 +48,26 @@ namespace MiddleEgyptianDictionary.Services
                 Serializer.SaveData(saveTo, Trigrams);
             }
             return Trigrams;
+        }
+
+        /// <summary>
+        /// Parses the MdC texts at <paramref name="textsPath"/> and writes every preprocessed,
+        /// Gardiner-normalized line to <paramref name="saveTo"/> as a JSON array of strings.
+        /// This is the input the TransformerFormatter preprocessor expects.
+        /// </summary>
+        public static int ExportPreprocessedLines(string textsPath, string saveTo)
+        {
+            preprocessedLines = new List<string>();
+            try
+            {
+                ParseMDCFiles(textsPath);
+                File.WriteAllText(saveTo, preprocessedLines.ToJson());
+                return preprocessedLines.Count;
+            }
+            finally
+            {
+                preprocessedLines = null;
+            }
         }
 
         private static void ParseMDCFiles(string path)
@@ -102,6 +126,10 @@ namespace MiddleEgyptianDictionary.Services
             newLine = newLine.Replace("J", "Aa");
             var matches = Regex.Matches(newLine, @"(-|\*|:|&)([a-zA-Z]+?)(-|\*|:)");
             Debug.Assert(matches.Count == 0);
+            if (!(preprocessedLines is null))
+            {
+                preprocessedLines.Add(MDCToGardiner.NormalizeGardinerString(newLine));
+            }
             ParseLine(newLine);
         }
 
@@ -127,11 +155,12 @@ namespace MiddleEgyptianDictionary.Services
             foreach (Match match in Regex.Matches(line, @"(-|\*|:)([1-5]0?0?|100)(-|\*|:)?"))
             {
                 string number = match.Groups[2].ToString();
-                string matchStr = match.ToString().Replace("*", @"\*");
-                string replacement = (match.Groups[1].ToString() +
+                string matchStr = match.ToString();
+                string replacement = match.Groups[1].ToString() +
                         MDCToGardiner.GetGardinerFromNumbers(number) +
-                        match.Groups[3].ToString()).Replace("*", @"\*");
-                line = Regex.Replace(line, matchStr, replacement);                
+                        match.Groups[3].ToString();
+                // Literal replace: the match contains '*', which is a regex metacharacter
+                line = line.Replace(matchStr, replacement);
             }
             return line;
         }
