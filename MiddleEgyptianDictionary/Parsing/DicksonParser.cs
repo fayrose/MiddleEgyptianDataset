@@ -14,6 +14,8 @@ namespace MiddleEgyptianDictionary.DictionaryParser
     {
         private Queue<string> partialLine = new Queue<string>();
 
+        int lastOddPageLength = 0;
+
         public DicksonParser(string fileName,
                              Dictionary<string, DictionaryEntry> hashTracker) : 
             base(fileName, hashTracker) { }
@@ -46,9 +48,17 @@ namespace MiddleEgyptianDictionary.DictionaryParser
                 lineList[0] = partialLine.Dequeue() + " " + lineList[0];
             }
 
-            foreach (string item in lineList)
+            for (int i = 0; i < lineList.Count; i++)
             {
-                ParseLineHelper(item);
+                string item = lineList[i];
+                var pageIndex = pageNumber % 2 == 1 ? i : i + lastOddPageLength;
+                int columnedPageNumber = (pageNumber + 1) / 2;
+                ParseLineHelper(item, columnedPageNumber, pageIndex);
+            }
+
+            if (pageNumber % 2 == 1)
+            {
+                lastOddPageLength = lineList.Count;
             }
         }
 
@@ -93,7 +103,7 @@ namespace MiddleEgyptianDictionary.DictionaryParser
             return lineList;
         }
 
-        private void ParseLineHelper(string input)
+        private void ParseLineHelper(string input, int pageNumber, int indexOnPage)
         {
             int idxLBracket = input.IndexOf('[');
             int idxRBracket = input.IndexOf(']');
@@ -122,7 +132,8 @@ namespace MiddleEgyptianDictionary.DictionaryParser
                 posChunk = "";
             }
             string gardinerChunk = input.Substring(idxLCurly + 1, (idxRCurly - idxLCurly - 1));
-            CreateEntry(translitChunk, translationChunk.Trim(), posChunk, FixDoubledGardinerIds(gardinerChunk), DataSource.dickson);
+
+            CreateEntry(translitChunk, translationChunk.Trim(), posChunk, FixDoubledGardinerIds(gardinerChunk), DataSource.dickson, pageNumber, indexOnPage);
         }
 
         public static string FixDoubledGardinerIds(string gardinerChunk)

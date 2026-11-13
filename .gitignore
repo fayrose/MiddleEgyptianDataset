@@ -260,3 +260,7 @@ paket-files/
 __pycache__/
 *.pyc
 /MiddleEgyptianDictionary/stanford-english-corenlp-2018-10-05-models.jar
+
+# Local-only: copyrighted source PDF and NuGet-copied native libraries
+FaulknerParser/Resources/Faulkner.pdf
+MiddleEgyptianDictionary/Core/

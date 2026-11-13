@@ -2,10 +2,10 @@
 {
     public enum DataSource : int
     {
-        dickson = 0,
-        lexicon = 1,
+        lexicon = 0,
+        dickson = 1,
         vygus = 2,
-        test = 3
+        faulkner = 4
     }
 
     public enum PartOfSpeech : int

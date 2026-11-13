@@ -65,7 +65,7 @@ namespace MiddleEgyptianDictionary.Services
 
         private static void ParsePage(string page)
         {
-            string[] lines = page.Split(new string[] { "!\n", "-!\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = page.Split(new string[] { "!\n", "-!\n", "!\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
             {
                 PreprocessLine(line);
@@ -99,6 +99,7 @@ namespace MiddleEgyptianDictionary.Services
             newLine = Regex.Replace(newLine, @"((-|\*|:|&)(O|o))+(-|\*|:)", "-");
             newLine = ChangePhoneticToGardiner(newLine);
             newLine = FixNumbering(newLine);
+            newLine = newLine.Replace("J", "Aa");
             var matches = Regex.Matches(newLine, @"(-|\*|:|&)([a-zA-Z]+?)(-|\*|:)");
             Debug.Assert(matches.Count == 0);
             ParseLine(newLine);

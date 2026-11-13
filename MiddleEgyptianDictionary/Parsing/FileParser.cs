@@ -26,7 +26,11 @@ public abstract class FileParser
                                          string translationChunk,
                                          string posChunk,
                                          string signList,
-                                         DataSource dictName)
+                                         DataSource dictName,
+                                         int? page = null,
+                                         int? indexOnPage = null,
+                                         string formatting = null,
+                                         DictionaryEntry baseEntry = null)
     {
         
         DictionaryEntry entry;
@@ -38,17 +42,35 @@ public abstract class FileParser
         // Check if the HashTracker contains the hashstring
         if (!HashTracker.TryGetValue(hashString, out entry))
         {
-            string mdc = Formatter.GetFormattedWord(signList);
+            string mdc = formatting ?? Formatter.GetFormattedWord(signList);
             string res = ManuelDeCodageToRESConverter.ConvertString(mdc);
-            entry = new DictionaryEntry()
+            if (baseEntry is null)
             {
-                Id = ObjectId.GenerateNewId(),
-                Transliteration = transliterationChunk,
-                GardinerSigns = signList,
-                ManuelDeCodage = mdc.Replace("AA", "Aa"),
-                Res = res.Equals(mdc) ? null : res.Replace("AA", "Aa")
-            };
+                entry = new DictionaryEntry()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Transliteration = transliterationChunk,
+                    GardinerSigns = signList,
+                    ManuelDeCodage = mdc.Replace("AA", "Aa").Replace("J", "Aa"),
+                    Res = res.Equals(mdc) ? null : res.Replace("AA", "Aa").Replace("J", "Aa"),
+                    IsCorrectlyFormatted = !(formatting is null)
+                };
+            }
+            else
+            {
+                entry = baseEntry;
+                entry.ManuelDeCodage = mdc.Replace("AA", "Aa");
+                entry.Res = res.Equals(mdc) ? null : res.Replace("AA", "Aa");
+            }
+            
             HashTracker.Add(hashString, entry);
+        }
+        if (!entry.IsCorrectlyFormatted && !(formatting is null) && entry.ManuelDeCodage != formatting)
+        {
+            entry.ManuelDeCodage = formatting.Replace("AA", "Aa").Replace("J", "Aa");
+            string res = ManuelDeCodageToRESConverter.ConvertString(formatting);
+            entry.Res = res.Equals(formatting) ? null : res.Replace("AA", "Aa").Replace("J", "Aa");
+            entry.IsCorrectlyFormatted = true;
         }
         translationChunk = translationChunk.Replace("''", "'").Trim();
         Translation currentTranslation = entry.Translations.Where(x => x.translation == translationChunk).FirstOrDefault();
@@ -57,7 +79,7 @@ public abstract class FileParser
             bool appendedToExistingEntry = false;
             if (string.IsNullOrWhiteSpace(translationChunk))
             {
-                currentTranslation = entry.Translations.Where(x => x.TranslationMetadata.PartOfSpeech is null).FirstOrDefault();
+                currentTranslation = entry.Translations.Where(x => x.TranslationMetadata.All(x => x.PartOfSpeech is null)).FirstOrDefault();
                 if (!(currentTranslation is null))
                 {
                     appendedToExistingEntry = true;
@@ -69,15 +91,32 @@ public abstract class FileParser
                 entry.Translations.Add(currentTranslation);
             }
         }
-        Metadata existingMetadata = currentTranslation.TranslationMetadata;
-        bool notDuplicate = existingMetadata != null && 
-                            existingMetadata.DictionaryName == dictName &&
-                            existingMetadata.PartOfSpeech == posChunk ?
-                            false : true;
+        Metadata[] existingMetadata = currentTranslation.TranslationMetadata;
+        bool notDuplicate = true;
+        if (existingMetadata != null)
+        {
+            foreach (var m in existingMetadata)
+            {
+                if (m.DictionaryName == dictName && m.PartOfSpeech == posChunk && m.Page == page && m.IndexOnPage == indexOnPage)
+                {
+                    notDuplicate = false;
+                }
+            }
+        }
+
         if (notDuplicate)
         {
-            Metadata metadata = new Metadata() { DictionaryName = dictName };
-            currentTranslation.TranslationMetadata = metadata;
+            Metadata metadata = new Metadata() { DictionaryName = dictName, Page = page, IndexOnPage = indexOnPage };
+
+            if (currentTranslation.TranslationMetadata is null)
+            {
+                currentTranslation.TranslationMetadata = new Metadata[] { metadata };
+            }
+            else
+            {
+                currentTranslation.TranslationMetadata = currentTranslation.TranslationMetadata.Concat(new Metadata[] { metadata }).ToArray();
+            }
+
             if (posChunk != "" && posChunk != null)
             {
                 metadata.PartOfSpeech = posChunk.Trim();

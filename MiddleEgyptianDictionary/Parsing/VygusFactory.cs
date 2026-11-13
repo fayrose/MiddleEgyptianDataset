@@ -18,7 +18,7 @@ namespace MiddleEgyptianDictionary.Parsing
 
         public FileParser Create2018Instance(Dictionary<string, DictionaryEntry> entryLocation)
         {
-            return new VygusParser(Constants.VygusDictionary2018PdfPath, entryLocation, is2018:true);
+            return new VygusParser(Constants.VygusDictionary2018PdfPath, entryLocation, is2018: true, Constants.CorrectlyFormattedPath);
         }
 
 

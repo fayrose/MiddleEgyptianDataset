@@ -148,6 +148,7 @@ namespace MiddleEgyptianDictionary.Services
             { "V20K", "V20*V20*V20*V20" },
             { "V20L", ".*[sep=0]V20*V20*[sep=0].:V20*V20*V20" },
             { "100", "V1" },
+            { "AV1", "A100" },
             { "V1A", "V1*V1" },
             { "V1B", "V1*V1*V1" },
             { "V1C", "V1*V1*V1*V1" },

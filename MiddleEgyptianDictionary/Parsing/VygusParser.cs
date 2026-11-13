@@ -1,10 +1,11 @@
 ﻿using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using MiddleEgyptianDictionary.Parsing;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,14 +16,22 @@ namespace MiddleEgyptianDictionary.DictionaryParser
     {
         private readonly int startPage, endPage;
         private readonly bool is2018;
+        private readonly Dictionary<int, Dictionary<int, string>> correctlyFormattedDict;
         public VygusParser(string pdfName,
                            Dictionary<string, DictionaryEntry> hashTracker,
-                           bool is2018 = false) :
+                           bool is2018 = false,
+                           string pathToCorrectlyFormattedJson = null) :
             base(pdfName, hashTracker)
         {
             startPage = is2018 ? 1 : Constants.Vygus2012FirstPage;
             endPage = is2018 ? Constants.Vygus2018LastPage : Constants.Vygus2012LastPage;
             this.is2018 = is2018;
+            if (is2018 && !(pathToCorrectlyFormattedJson is null))
+            {
+                using StreamReader file = File.OpenText(pathToCorrectlyFormattedJson);
+                JsonSerializer js = new JsonSerializer();
+                correctlyFormattedDict = (Dictionary<int, Dictionary<int, string>>)js.Deserialize(file, typeof(Dictionary<int, Dictionary<int, string>>));
+            }
         }
 
         public override void ParseAll()
@@ -104,13 +113,19 @@ namespace MiddleEgyptianDictionary.DictionaryParser
             int halfCount = wordList.Count / 2;
             for (int j = 0; j < halfCount; j++)
             {
-                ParseWordDataRegex(wordList[j * 2].Trim(), wordList[j * 2 + 1].Trim());
+                string formatting = null;
+                if (this.correctlyFormattedDict.ContainsKey(pageNumber))
+                {
+                    this.correctlyFormattedDict[pageNumber].TryGetValue(j, out formatting);
+                }
+                    
+                ParseWordDataRegex(wordList[j * 2].Trim(), wordList[j * 2 + 1].Trim(), pageNumber, j, formatting);
             }
 
             return dictList;
         }
         
-        private void ParseWordDataRegex(string wordData, string transliteration)
+        private void ParseWordDataRegex(string wordData, string transliteration, int pageNumber, int indexOnPage, string formatting = null)
         {
             string partOfSpeech = "", translation = "", signString = "";
 
@@ -213,13 +228,42 @@ namespace MiddleEgyptianDictionary.DictionaryParser
             transliteration = String.Join(" ", transliteration.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             partOfSpeech = String.Join(" ", partOfSpeech.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             translation = String.Join(" ", translation.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-
-            CreateEntry(transliteration.Trim(),
+            
+            transliteration = transliteration.Replace("xn,m", "xnm");
+            transliteration = transliteration.Replace(".", " ");
+            transliteration = transliteration.Replace("-", " ");
+            transliteration = transliteration.Replace("  ", " ");
+            transliteration = transliteration.Replace("(", string.Empty).Replace(")", string.Empty);
+            transliteration = transliteration.Replace("[", string.Empty).Replace("]", string.Empty);
+            transliteration = transliteration.Replace("{", string.Empty).Replace("}", string.Empty);
+            transliteration = transliteration.Trim();
+            
+            var splitTranslit = transliteration.Split('/');
+            if (splitTranslit.Length > 1)
+            {
+                foreach (var translitOption in splitTranslit)
+                {
+                    CreateEntry(translitOption.Trim(),
+                        translation.Trim(),
+                        partOfSpeech.Trim(),
+                        signString.Trim(),
+                        DataSource.vygus,
+                        pageNumber,
+                        indexOnPage,
+                        formatting);
+                }
+            }
+            else
+            {
+                CreateEntry(transliteration.Trim(),
                 translation.Trim(),
                 partOfSpeech.Trim(),
                 signString.Trim(),
-                DataSource.vygus);
-
+                DataSource.vygus,
+                pageNumber,
+                indexOnPage,
+                formatting);
+            }
         }
 
         private int ChoosePartOfSpeech(string wordData, MatchCollection inBrackets)

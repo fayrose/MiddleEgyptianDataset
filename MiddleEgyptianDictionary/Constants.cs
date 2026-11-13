@@ -8,10 +8,14 @@ namespace MiddleEgyptianDictionary
         public static string DicksonDictionaryPdfPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Resources", "DicksonDictionary_.pdf");
         public static string LexiconDictionaryPdfPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Resources", "Lexicon.txt");
         public static string VygusDictionary2012PdfPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Resources", "MarkVygusDictionary.pdf");
+        public static string FaulknerDictionaryPdfPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Resources", "Faulkner.pdf");
+        public static string FaulknerEntriesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "FaulknerParser", "Resources", "FaulknerEntries.json");
         public static string VygusDictionary2018PdfPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Resources", "VYGUS_Dictionary_2018.pdf");
-       public static string RepositoryLocation = Path.GetDirectoryName(Path.GetDirectoryName(
+        public static string RepositoryLocation = Path.GetDirectoryName(Path.GetDirectoryName(
                                                   Path.GetDirectoryName(
                                                         System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase))).Substring(6);
+        public static string CorrectlyFormattedPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "MiddleEgyptianOCR", "code", "correctly_formatted.json");
+
         public static string ConnectionString = @"mongodb://localhost:27017";
 
         // Parsing Constants

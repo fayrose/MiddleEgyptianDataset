@@ -20,7 +20,8 @@ namespace MiddleEgyptianDictionary
         public string ManuelDeCodage { get; set; }
         public string Res { get; set; }
         public virtual ICollection<Translation> Translations { get; set; }
-
+        [BsonIgnore]
+        internal bool IsCorrectlyFormatted { get; set; }
         public override string ToString()
         {
             return GardinerConverter.ConvertGardiner(this.GardinerSigns) + 
