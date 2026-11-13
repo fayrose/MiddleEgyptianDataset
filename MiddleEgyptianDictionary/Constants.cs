@@ -16,7 +16,17 @@ namespace MiddleEgyptianDictionary
                                                         System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase))).Substring(6);
         public static string CorrectlyFormattedPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "MiddleEgyptianOCR", "code", "correctly_formatted.json");
 
-        public static string ConnectionString = @"mongodb://localhost:27017";
+        // Set the MED_MONGODB_URI environment variable to override (on Azure App Service: an Application setting).
+        // The literal below is only the fallback used when the variable is not set.
+        public const string ConnectionStringEnvVar = "MED_MONGODB_URI";
+        private const string FallbackConnectionString = @"mongodb://localhost:27017";
+        public static string ConnectionString = ResolveConnectionString();
+
+        private static string ResolveConnectionString()
+        {
+            string fromEnvironment = System.Environment.GetEnvironmentVariable(ConnectionStringEnvVar);
+            return string.IsNullOrWhiteSpace(fromEnvironment) ? FallbackConnectionString : fromEnvironment;
+        }
 
         // Parsing Constants
         public const int Vygus2018LastPage = 2568;
