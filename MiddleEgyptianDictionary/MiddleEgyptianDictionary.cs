@@ -22,10 +22,12 @@ namespace MiddleEgyptianDictionary
 
         public void CreateDictionaries()
         {
-            IFactory<FileParser>[] factories = { new FaulknerFactory(),
-                                                 new VygusFactory(), 
-                                                 new DicksonFactory(),
-                                                 new LexiconFactory() };
+            var factories = new List<IFactory<FileParser>>();
+            if (File.Exists(Constants.FaulknerEntriesPath))
+                factories.Add(new FaulknerFactory());
+            factories.Add(new VygusFactory());
+            factories.Add(new DicksonFactory());
+            factories.Add(new LexiconFactory());
             foreach (var factory in factories)
             {
                 FileParser parser = factory.CreateInstance(hashTracker);
