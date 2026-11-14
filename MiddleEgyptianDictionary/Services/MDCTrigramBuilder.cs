@@ -80,6 +80,7 @@ namespace MiddleEgyptianDictionary.Services
 
         private static void ParseData(string fileData)
         {
+            fileData = fileData.Replace("\r\n", "\n");
             string[] pages = fileData.Split(new string[] { "!!" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string page in pages)
             {
@@ -124,6 +125,7 @@ namespace MiddleEgyptianDictionary.Services
             newLine = ChangePhoneticToGardiner(newLine);
             newLine = FixNumbering(newLine);
             newLine = newLine.Replace("J", "Aa");
+            newLine = newLine.TrimEnd('-', '*', ':', '&');
             var matches = Regex.Matches(newLine, @"(-|\*|:|&)([a-zA-Z]+?)(-|\*|:)");
             Debug.Assert(matches.Count == 0);
             if (!(preprocessedLines is null))
